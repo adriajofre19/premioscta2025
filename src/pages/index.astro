@@ -1,0 +1,101 @@
+---
+import Layout from '../layouts/Layout.astro';
+import resultats from '../../public/resultats_partits.json';
+
+// Agrupar estadístiques per àrbitre assignat
+const stats = {};
+for (const partit of resultats) {
+  const nom = partit.arbitre_web;
+  if (!stats[nom]) {
+    stats[nom] = {
+      partits: 0,
+      grogues: 0,
+      vermelles: 0,
+      doble_groga: 0,
+      grogues_banquillo: 0,
+      vermelles_banquillo: 0,
+      doble_groga_banquillo: 0,
+      gols_local: 0,
+      gols_visitant: 0,
+      victories_local: 0,
+      victories_visitant: 0,
+      empats: 0,
+    };
+  }
+  stats[nom].partits += 1;
+  stats[nom].grogues += (partit.grogues_local || 0) + (partit.grogues_visitant || 0);
+  stats[nom].vermelles += (partit.vermelles_local || 0) + (partit.vermelles_visitant || 0);
+  stats[nom].doble_groga += (partit.doble_groga_local || 0) + (partit.doble_groga_visitant || 0);
+  stats[nom].grogues_banquillo += (partit.groga_banquillo_local || 0) + (partit.groga_banquillo_visitant || 0);
+  stats[nom].vermelles_banquillo += (partit.vermella_banquillo_local || 0) + (partit.vermella_banquillo_visitant || 0);
+  stats[nom].doble_groga_banquillo += (partit.doble_groga_banquillo_local || 0) + (partit.doble_groga_banquillo_visitant || 0);
+
+  // Gols locals i visitants
+  const gols_local = parseInt(partit.gols_local || "0", 10);
+  const gols_visitant = parseInt(partit.gols_visitant || "0", 10);
+  stats[nom].gols_local += gols_local;
+  stats[nom].gols_visitant += gols_visitant;
+
+  // Comptar victòries i empats
+  if (!isNaN(gols_local) && !isNaN(gols_visitant)) {
+    if (gols_local > gols_visitant) stats[nom].victories_local += 1;
+    else if (gols_local < gols_visitant) stats[nom].victories_visitant += 1;
+    else stats[nom].empats += 1;
+  }
+}
+
+// Calcula la mitja de grogues i vermelles per àrbitre
+for (const nom in stats) {
+  const s = stats[nom];
+  s.mitja_grogues = s.partits ? (s.grogues / s.partits).toFixed(2) : "0.00";
+  s.mitja_vermelles = s.partits ? (s.vermelles / s.partits).toFixed(2) : "0.00";
+}
+---
+
+<Layout>
+  <h1 class="text-3xl font-bold mb-6">Estadístiques d'àrbitres</h1>
+  <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+    <table class="min-w-full text-sm text-left bg-white ">
+      <thead class="bg-gray-100 ">
+        <tr>
+          <th class="px-4 py-2 font-semibold">Àrbitre</th>
+          <th class="px-4 py-2 font-semibold">Partits</th>
+          <th class="px-4 py-2 font-semibold">Grogues</th>
+          <th class="px-4 py-2 font-semibold">Mitja grogues</th>
+          <th class="px-4 py-2 font-semibold">Vermelles</th>
+          <th class="px-4 py-2 font-semibold">Mitja vermelles</th>
+          <th class="px-4 py-2 font-semibold">Doble groga</th>
+          <th class="px-4 py-2 font-semibold">Grogues banquillo</th>
+          <th class="px-4 py-2 font-semibold">Vermelles banquillo</th>
+          <th class="px-4 py-2 font-semibold">Doble groga banquillo</th>
+          <th class="px-4 py-2 font-semibold">Gols locals</th>
+          <th class="px-4 py-2 font-semibold">Gols visitants</th>
+          <th class="px-4 py-2 font-semibold">Victòries locals</th>
+          <th class="px-4 py-2 font-semibold">Victòries visitants</th>
+          <th class="px-4 py-2 font-semibold">Empats</th>
+        </tr>
+      </thead>
+      <tbody>
+        {Object.entries(stats).map(([nom, s]) => (
+          <tr class="border-b last:border-0 hover:bg-gray-50 ">
+            <td class="px-4 py-2">{nom}</td>
+            <td class="px-4 py-2">{s.partits}</td>
+            <td class="px-4 py-2">{s.grogues}</td>
+            <td class="px-4 py-2">{s.mitja_grogues}</td>
+            <td class="px-4 py-2">{s.vermelles}</td>
+            <td class="px-4 py-2">{s.mitja_vermelles}</td>
+            <td class="px-4 py-2">{s.doble_groga}</td>
+            <td class="px-4 py-2">{s.grogues_banquillo}</td>
+            <td class="px-4 py-2">{s.vermelles_banquillo}</td>
+            <td class="px-4 py-2">{s.doble_groga_banquillo}</td>
+            <td class="px-4 py-2">{s.gols_local}</td>
+            <td class="px-4 py-2">{s.gols_visitant}</td>
+            <td class="px-4 py-2">{s.victories_local}</td>
+            <td class="px-4 py-2">{s.victories_visitant}</td>
+            <td class="px-4 py-2">{s.empats}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</Layout>
