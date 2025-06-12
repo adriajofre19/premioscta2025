@@ -15,7 +15,7 @@ export default function ArbitrePartits() {
     : [];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-8">
       <h2 className="text-2xl font-bold mb-6">Partits per àrbitre</h2>
       <div className="mb-6 flex items-center gap-4">
         <label htmlFor="arbitre" className="font-medium text-gray-700">
