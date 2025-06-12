@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import resultats from '../../public/resultats_partits.json';
+import ArbitrePartits from '../components/ArbitrePartits.jsx';
 
 // Agrupar estadístiques per àrbitre assignat
 const stats = {};
@@ -98,4 +99,5 @@ for (const nom in stats) {
       </tbody>
     </table>
   </div>
+  <ArbitrePartits client:load />
 </Layout>
